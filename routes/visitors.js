@@ -104,7 +104,7 @@ router.post('/visitors', async (req, res) => {
 });
 
 // Profil bilgilerini güncelle (kullanıcı adı ve profil fotoğrafı)
-router.post('/profile/:uniqueId', upload.single('profilePhoto'), async (req, res) => {
+router.put('/visitors/:uniqueId', upload.single('profilePhoto'), async (req, res) => {
     const { uniqueId } = req.params;
     const { username } = req.body;
 

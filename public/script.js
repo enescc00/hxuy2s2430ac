@@ -141,7 +141,8 @@ class VisitorMap {
                 return;
             }
             
-            document.getElementById('profile-photo').value = dataURL;
+            // Bu satır artık gereksiz, çünkü dosyayı doğrudan input'tan alıyoruz.
+            // document.getElementById('profile-photo').value = dataURL;
             
             // Preview göster
             const preview = document.getElementById('upload-preview');
@@ -276,14 +277,15 @@ class VisitorMap {
         return content;
     }
 
-    async updateProfile() {
+        async updateProfile() {
         if (!this.userUniqueId) {
             this.showNotification('Profil güncellenemiyor. Lütfen sayfayı yenileyin. ❌', 'error');
             return;
         }
 
         const username = document.getElementById('username').value.trim();
-        const profilePhoto = document.getElementById('profile-photo').value.trim();
+        const photoInput = document.getElementById('profile-upload');
+        const photoFile = photoInput.files[0];
 
         // Validation
         if (username && username.length > 50) {
@@ -291,30 +293,36 @@ class VisitorMap {
             return;
         }
 
+        const formData = new FormData();
+        formData.append('username', username);
+        if (photoFile) {
+            formData.append('profilePhoto', photoFile);
+        }
+
         try {
             const response = await fetch(`/api/visitors/${this.userUniqueId}`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ 
-                    username: username || null, 
-                    profilePhoto: profilePhoto || null 
-                })
+                body: formData // Content-Type başlığı tarayıcı tarafından otomatik ayarlanır
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Sunucu hatası');
+                 // Hata mesajını JSON'dan almayı dene
+                throw new Error(data.error || `Sunucu hatası: ${response.statusText}`);
             }
 
-            const data = await response.json();
             closeProfileModal();
             this.showNotification('Profil başarıyla güncellendi! ✅', 'success');
             
         } catch (error) {
             console.error('Profil güncelleme hatası:', error);
-            this.showNotification(`Profil güncellenirken hata: ${error.message} ❌`, 'error');
+            // JSON ayrıştırma hatası durumunda daha genel bir mesaj göster
+            let errorMessage = error.message;
+            if (error instanceof SyntaxError) {
+                errorMessage = "Sunucudan geçersiz bir yanıt alındı.";
+            }
+            this.showNotification(`Profil güncellenirken hata: ${errorMessage} ❌`, 'error');
         }
     }
 
@@ -461,7 +469,7 @@ function openProfileModal() {
         const myVisitor = window.visitorMap.visitors.get(window.visitorMap.userUniqueId);
         if (myVisitor) {
             document.getElementById('username').value = myVisitor.visitor.profile.username || '';
-            document.getElementById('profile-photo').value = myVisitor.visitor.profile.profilePhoto || '';
+            // Bu input artık kullanılmıyor, bu yüzden bu satırı kaldırıyoruz.
             
             // Preview'ı da güncelle
             const preview = document.getElementById('upload-preview');
