@@ -8,6 +8,7 @@ const path = require('path');
 require('dotenv').config();
 
 const app = express();
+app.set('trust proxy', 1); // Render gibi proxy'ler için gerekli
 const server = http.createServer(app);
 const io = socketIo(server, {
     cors: {
