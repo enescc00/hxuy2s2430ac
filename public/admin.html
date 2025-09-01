@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - İsimsiz'in Haritası</title>
+    <link rel="stylesheet" href="admin-style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="admin-app">
+        <header class="admin-header">
+            <h1>🛡️ Admin Panel</h1>
+            <div class="header-actions">
+                <button onclick="refreshData()" class="btn btn-secondary">🔄 Yenile</button>
+                <button onclick="goToMainSite()" class="btn btn-primary">🗺️ Ana Siteye Git</button>
+            </div>
+        </header>
+
+        <nav class="admin-nav">
+            <button class="nav-btn active" onclick="showTab('dashboard')">📊 Dashboard</button>
+            <button class="nav-btn" onclick="showTab('visitors')">👥 Ziyaretçiler</button>
+            <button class="nav-btn" onclick="showTab('logs')">📋 Loglar</button>
+            <button class="nav-btn" onclick="showTab('settings')">⚙️ Ayarlar</button>
+        </nav>
+
+        <main class="admin-content">
+            <!-- Dashboard Tab -->
+            <div id="dashboard-tab" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-info">
+                            <h3 id="total-visitors">0</h3>
+                            <p>Toplam Ziyaretçi</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📈</div>
+                        <div class="stat-info">
+                            <h3 id="recent-activity">0</h3>
+                            <p>Son 24 Saat</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🌍</div>
+                        <div class="stat-info">
+                            <h3 id="total-countries">0</h3>
+                            <p>Farklı Ülke</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🏙️</div>
+                        <div class="stat-info">
+                            <h3 id="total-cities">0</h3>
+                            <p>Farklı Şehir</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-container">
+                    <div class="chart-card">
+                        <h3>En Popüler Ülkeler</h3>
+                        <div id="country-chart" class="chart-content"></div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>En Popüler Şehirler</h3>
+                        <div id="city-chart" class="chart-content"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visitors Tab -->
+            <div id="visitors-tab" class="tab-content">
+                <div class="table-header">
+                    <h2>Ziyaretçi Listesi</h2>
+                    <div class="table-actions">
+                        <input type="text" id="visitor-search" placeholder="🔍 Ara..." class="search-input">
+                        <button onclick="exportVisitors()" class="btn btn-secondary">📥 Dışa Aktar</button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table id="visitors-table" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>IP Adresi</th>
+                                <th>Kullanıcı Adı</th>
+                                <th>Şehir</th>
+                                <th>Ülke</th>
+                                <th>Katılma Tarihi</th>
+                                <th>Son Güncelleme</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody id="visitors-tbody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Logs Tab -->
+            <div id="logs-tab" class="tab-content">
+                <div class="table-header">
+                    <h2>Aktivite Logları</h2>
+                    <div class="table-actions">
+                        <select id="log-filter" class="select-input">
+                            <option value="">Tüm Aktiviteler</option>
+                            <option value="visit">Ziyaretler</option>
+                            <option value="create_visitor">Yeni Kayıtlar</option>
+                            <option value="update_profile">Profil Güncellemeleri</option>
+                        </select>
+                        <button onclick="clearLogs()" class="btn btn-danger">🗑️ Logları Temizle</button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table id="logs-table" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Zaman</th>
+                                <th>IP Adresi</th>
+                                <th>Aktivite</th>
+                                <th>Konum</th>
+                                <th>Detaylar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logs-tbody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settings-tab" class="tab-content">
+                <div class="settings-section">
+                    <h2>Sistem Ayarları</h2>
+                    
+                    <div class="setting-item">
+                        <h3>Veritabanı Yönetimi</h3>
+                        <p>Dikkatli olun! Bu işlemler geri alınamaz.</p>
+                        <div class="setting-actions">
+                            <button onclick="backupDatabase()" class="btn btn-secondary">💾 Yedek Al</button>
+                            <button onclick="clearDatabase()" class="btn btn-danger">🗑️ Tüm Verileri Temizle</button>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <h3>API Ayarları</h3>
+                        <div class="form-group">
+                            <label for="rate-limit">Rate Limit (dakika başına istek):</label>
+                            <input type="number" id="rate-limit" value="100" min="10" max="1000">
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <h3>Sistem Bilgileri</h3>
+                        <div id="system-info" class="system-info">
+                            <div class="info-item">
+                                <span class="label">Node.js Versiyonu:</span>
+                                <span class="value" id="node-version">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Uptime:</span>
+                                <span class="value" id="uptime">-</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="label">Bellek Kullanımı:</span>
+                                <span class="value" id="memory-usage">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="admin-script.js"></script>
+</body>
+</html>

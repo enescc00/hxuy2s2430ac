@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İsimsiz'in Kozmik Haritası</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌌</text></svg>">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h2>İsimsiz'in Kozmik Haritası Yükleniyor...</h2>
+            <p>Evren şekilleniyor 🌌</p>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+        <div id="particles-js"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">İsimsiz</h1>
+            <p class="hero-subtitle">Evrenime Hoş Geldiniz</p>
+            <button onclick="scrollToMap()" class="hero-btn">
+                <span>HARİTAYI KEŞFET</span>
+                <div class="btn-glow"></div>
+            </button>
+        </div>
+        <div class="hero-gradient"></div>
+    </section>
+
+    <!-- Map Section -->
+    <section id="map-section" class="map-section">
+        <header class="header">
+            <h1 class="title">Harita Üzerinde Profilinizi Düzenleyebilirsiniz</h1>
+            <div class="header-actions">
+                <button onclick="openProfileModal()" class="btn btn-primary btn-small">👤 Profili Düzenle</button>
+                <div class="stats">
+                    <span id="visitor-count">0 Ziyaretçi</span>
+                    <span id="online-count">0 Çevrimiçi</span>
+                </div>
+            </div>
+        </header>
+
+        <div id="map-container">
+            <div id="map"></div>
+        </div>
+
+        <!-- Profile Modal -->
+        <div id="profile-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Profilini Kişiselleştir</h3>
+                    <button class="close-btn" onclick="closeProfileModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Haritada nasıl görünmek istiyorsun?</p>
+                    <form id="profile-form">
+                        <div class="form-group">
+                            <label for="username">Kullanıcı Adı (isteğe bağlı):</label>
+                            <input type="text" id="username" name="username" maxlength="50" placeholder="Örn: gezgin123">
+                        </div>
+                        <div class="form-group">
+                            <label for="profile-photo">Profil Fotoğrafı (isteğe bağlı):</label>
+                            <input type="url" id="profile-photo" name="profilePhoto" placeholder="https://example.com/photo.jpg">
+                            <div class="upload-option">
+                                <span>veya</span>
+                                <input type="file" id="profile-upload" accept="image/*" style="display: none">
+                                <button type="button" class="btn btn-secondary btn-small" onclick="document.getElementById('profile-upload').click()">📸 Fotoğraf Yükle</button>
+                                <div id="upload-preview" class="upload-preview"></div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" onclick="closeProfileModal()" class="btn btn-secondary">İptal</button>
+                            <button type="submit" class="btn btn-primary">Kaydet</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+            <!-- Welcome Toast -->
+        <div id="welcome-toast" class="welcome-toast">
+            <div class="toast-content">
+                <h3>🌌 Kozmik Yolculuğa Hoş Geldin!</h3>
+                <p>Sen de evrenimizin bir parçası oldun. Yıldız haritandaki yerini özelleştirmek ister misin?</p>
+                <div class="toast-actions">
+                    <button onclick="openProfileModal()" class="btn btn-primary btn-small">Profili Düzenle</button>
+                    <button onclick="closeToast()" class="btn btn-secondary btn-small">Daha Sonra</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

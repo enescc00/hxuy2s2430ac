@@ -1,0 +1,684 @@
+/* İsimsiz'in Haritası - Discord temalı koyu tasarım */
+:root {
+    --discord-dark: #2c2f33;
+    --discord-darker: #23272a;
+    --discord-light: #99aab5;
+    --discord-blue: #7289da;
+    --discord-green: #43b581;
+    --discord-red: #f04747;
+    --discord-yellow: #faa61a;
+    --text-primary: #ffffff;
+    --text-secondary: #b9bbbe;
+    --bg-primary: #36393f;
+    --bg-secondary: #2f3136;
+    --border-color: #202225;
+}
+
+/* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Exo 2', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    overflow-x: hidden;
+}
+
+/* Hero Section - Kozmik Karşılama */
+.hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background: linear-gradient(135deg, #0A0A1A 0%, #1a1a2e 50%, #16213e 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+#particles-js {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    max-width: 800px;
+    padding: 0 20px;
+    animation: heroFadeIn 2s ease-out;
+}
+
+.hero-title {
+    font-size: 4rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, #ffffff, #9B59B6, #3498DB);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 30px rgba(155, 89, 182, 0.5);
+    margin-bottom: 1.5rem;
+    animation: titleGlow 3s ease-in-out infinite alternate;
+}
+
+.hero-subtitle {
+    font-size: 1.3rem;
+    font-weight: 300;
+    color: #E0E0E0;
+    margin-bottom: 3rem;
+    line-height: 1.6;
+    opacity: 0.9;
+}
+
+.hero-btn {
+    position: relative;
+    background: transparent;
+    border: 2px solid #9B59B6;
+    color: #ffffff;
+    padding: 18px 40px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    font-family: 'Exo 2', sans-serif;
+    cursor: pointer;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.hero-btn:hover {
+    background: #9B59B6;
+    box-shadow: 0 0 30px rgba(155, 89, 182, 0.6);
+    transform: translateY(-2px);
+}
+
+.btn-glow {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.hero-btn:hover .btn-glow {
+    left: 100%;
+}
+
+.hero-gradient {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background: linear-gradient(to bottom, transparent, var(--bg-primary));
+    z-index: 5;
+}
+
+/* Map Section */
+.map-section {
+    background: var(--bg-primary);
+    min-height: 100vh;
+}
+
+/* Animasyonlar */
+@keyframes heroFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes titleGlow {
+    from {
+        background-position: 0% 50%;
+    }
+    to {
+        background-position: 100% 50%;
+    }
+}
+
+/* Loading Screen */
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--discord-darker) 0%, var(--discord-dark) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.5s ease-out;
+}
+
+.loading-content {
+    text-align: center;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid var(--discord-dark);
+    border-top: 3px solid var(--discord-blue);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+#loading-screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Main App */
+#app {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header */
+.header {
+    background: var(--bg-secondary);
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    position: relative;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.stats {
+    display: flex;
+    gap: 20px;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.stats span {
+    background: var(--bg-primary);
+    padding: 5px 12px;
+    border-radius: 15px;
+    border: 1px solid var(--border-color);
+}
+
+/* Map Container */
+#map-container {
+    width: 100%;
+    height: calc(100vh - 80px);
+    position: relative;
+    z-index: 10;
+    background: #fff;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    background: #fff;
+}
+
+/* Leaflet Dark Theme Customization */
+.leaflet-container {
+    background: var(--discord-darker);
+}
+
+.leaflet-popup-content-wrapper {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+.leaflet-popup-tip {
+    background: var(--bg-secondary);
+}
+
+.leaflet-popup-content {
+    margin: 15px;
+    line-height: 1.4;
+}
+
+/* Custom Marker Styles */
+.visitor-marker {
+    background: var(--discord-blue);
+    border: 3px solid var(--text-primary);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: pulse 2s infinite;
+}
+
+.visitor-marker.new {
+    background: var(--discord-green);
+    animation: newMarker 0.6s ease-out;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(114, 137, 218, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(114, 137, 218, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(114, 137, 218, 0); }
+}
+
+@keyframes newMarker {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background: var(--bg-secondary);
+    margin: 10% auto;
+    padding: 0;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header {
+    padding: 20px 25px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.close-btn:hover {
+    background: var(--discord-red);
+    color: white;
+}
+
+.modal-body {
+    padding: 25px;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+input[type="text"], input[type="url"] {
+    width: 100%;
+    padding: 12px 15px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+input[type="text"]:focus, input[type="url"]:focus {
+    outline: none;
+    border-color: var(--discord-blue);
+    box-shadow: 0 0 0 2px rgba(114, 137, 218, 0.2);
+}
+
+.upload-option {
+    margin-top: 10px;
+    padding: 10px;
+    background: var(--bg-primary);
+    border-radius: 6px;
+    text-align: center;
+}
+
+.upload-option span {
+    color: var(--text-secondary);
+    font-size: 12px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.upload-preview {
+    margin-top: 10px;
+}
+
+.upload-preview img {
+    max-width: 100px;
+    max-height: 100px;
+    border-radius: 50%;
+    border: 2px solid var(--discord-blue);
+    object-fit: cover;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 25px;
+}
+
+/* Button Styles */
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+}
+
+.btn-primary {
+    background: var(--discord-blue);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #5b6eae;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: var(--bg-primary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+    background: var(--discord-dark);
+    color: var(--text-primary);
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+/* Toast Notification */
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    z-index: 1500;
+    min-width: 300px;
+    animation: toastSlideIn 0.4s ease-out;
+    display: none;
+}
+
+@keyframes toastSlideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.toast-content {
+    padding: 20px;
+}
+
+.toast h4 {
+    margin: 0 0 8px 0;
+    color: var(--discord-green);
+    font-weight: 600;
+}
+
+.toast p {
+    margin: 0 0 15px 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+/* Connection Status */
+.connection-status {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 8px 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    z-index: 1000;
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--discord-yellow);
+    animation: pulse 2s infinite;
+}
+
+.status-indicator.connected {
+    background: var(--discord-green);
+    animation: none;
+}
+
+.status-indicator.disconnected {
+    background: var(--discord-red);
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.3; }
+}
+
+/* Popup Content Styles */
+.popup-content {
+    text-align: center;
+    min-width: 200px;
+}
+
+.popup-content .profile-photo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid var(--discord-blue);
+    margin: 0 auto 10px;
+    display: block;
+    object-fit: cover;
+}
+
+.popup-content .username {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+}
+
+.popup-content .location {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.popup-content .join-date {
+    font-size: 11px;
+    color: var(--discord-light);
+    opacity: 0.7;
+}
+
+.popup-actions {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.popup-actions .btn {
+    font-size: 11px;
+    padding: 6px 12px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header {
+        padding: 12px 15px;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .title {
+        font-size: 20px;
+    }
+    
+    .stats {
+        gap: 15px;
+        font-size: 12px;
+    }
+    
+    .modal-content {
+        margin: 5% auto;
+        width: 95%;
+    }
+    
+    .toast {
+        right: 10px;
+        top: 10px;
+        min-width: calc(100vw - 20px);
+        max-width: calc(100vw - 20px);
+    }
+    
+    .connection-status {
+        bottom: 10px;
+        left: 10px;
+    }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--discord-light);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--discord-blue);
+}
+
+/* Hero Section Mobile Responsive */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+        padding: 0 10px;
+    }
+    
+    .hero-btn {
+        padding: 15px 30px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 2rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+    
+    .hero-content {
+        padding: 0 15px;
+    }
+}
