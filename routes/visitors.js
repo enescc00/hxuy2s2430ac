@@ -22,7 +22,8 @@ router.get('/', async (req, res) => {
 
 // Yeni ziyaretçi ekle
 router.post('/visitors', async (req, res) => {
-    const { socketId } = req.body; // İstemcinin socket.id'sini al
+        const { socketId } = req.body; // İstemcinin socket.id'sini al
+    console.log(`Received request for new visitor with socketId: ${socketId}`);
     try {
         let clientIP = req.headers['x-forwarded-for'] || 
                       req.connection.remoteAddress || 
@@ -46,7 +47,8 @@ router.post('/visitors', async (req, res) => {
         const existingVisitor = await Visitor.findOne({ ipAddress: clientIP });
         if (existingVisitor) {
             // Eğer ziyaretçi zaten varsa, onun _id'sini istemciye gönder
-            if (socketId && global.io.sockets.sockets.get(socketId)) {
+                        if (socketId && global.io.sockets.sockets.get(socketId)) {
+                console.log(`Emitting visitor-registered for existing visitor to socketId: ${socketId}`);
                 global.io.sockets.sockets.get(socketId).emit('visitor-registered', { id: existingVisitor._id, uniqueId: existingVisitor.uniqueId });
             }
             return res.json({ 
@@ -95,7 +97,8 @@ router.post('/visitors', async (req, res) => {
         await log.save();
 
         // Yeni ziyaretçinin _id'sini sadece ilgili istemciye gönder
-        if (socketId && global.io.sockets.sockets.get(socketId)) {
+                if (socketId && global.io.sockets.sockets.get(socketId)) {
+            console.log(`Emitting visitor-registered for new visitor to socketId: ${socketId}`);
             global.io.sockets.sockets.get(socketId).emit('visitor-registered', { id: newVisitor._id, uniqueId: newVisitor.uniqueId });
         }
 

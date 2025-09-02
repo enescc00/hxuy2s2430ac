@@ -62,8 +62,10 @@ class VisitorMap {
         this.socket = io();
         
         // Bağlantı durumu
-        this.socket.on('connect', () => {
-            this.socket.on('visitor-registered', (data) => {
+                this.socket.on('connect', () => {
+            console.log(`Socket connected with ID: ${this.socket.id}`); // Log socket ID
+                        this.socket.on('visitor-registered', (data) => {
+                console.log('Received visitor-registered event:', data);
                 console.log('Ziyaretçi kimliği sunucudan alındı:', data.id);
                 this.visitorId = data.id; // Sunucudan gelen veritabanı _id'sini sakla
                 this.userUniqueId = data.uniqueId;
@@ -74,6 +76,7 @@ class VisitorMap {
             this.updateConnectionStatus('connected');
             this.onlineCount++;
             this.updateStats();
+            this.createVisitor(); // Ziyaretçi oluşturma/getirme işlemini tetikle
         });
 
         this.socket.on('disconnect', () => {
@@ -182,8 +185,9 @@ class VisitorMap {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ socketId: this.socket.id }) // socket.id'yi sunucuya gönder
+                                body: JSON.stringify({ socketId: this.socket.id }) // socket.id'yi sunucuya gönder
             });
+            console.log(`createVisitor request sent for socket ID: ${this.socket.id}`);
 
             const data = await response.json();
             
