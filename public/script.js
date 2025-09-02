@@ -61,6 +61,20 @@ class VisitorMap {
     initSocket() {
         this.socket = io();
         
+        const chatToggleBtn = document.getElementById('chat-toggle-btn');
+        const chatContainer = document.getElementById('chat-container');
+
+        if (chatToggleBtn && chatContainer) {
+            chatToggleBtn.addEventListener('click', () => {
+                chatContainer.classList.toggle('visible');
+                if (chatContainer.classList.contains('visible')) {
+                    chatToggleBtn.textContent = '💬 Sohbeti Kapat';
+                } else {
+                    chatToggleBtn.textContent = '💬 Sohbeti Aç';
+                }
+            });
+        }
+        
         // Bağlantı durumu
                 this.socket.on('connect', () => {
             console.log(`Socket connected with ID: ${this.socket.id}`); // Log socket ID
