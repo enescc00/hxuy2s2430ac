@@ -30,6 +30,9 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
+// Socket.io instance'ını app'e ekle
+app.set('socketio', io);
+
 // MongoDB bağlantısı
 mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
@@ -43,6 +46,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 // Models
 const Visitor = require('./models/Visitor');
 const Log = require('./models/Log');
+const Message = require('./models/Message');
 
 // Socket.io instance'ını global hale getir
 global.io = io;
@@ -67,6 +71,41 @@ io.on('connection', (socket) => {
     
     socket.on('disconnect', () => {
         console.log('Kullanıcı ayrıldı:', socket.id);
+    });
+
+    // Yeni sohbet mesajı geldiğinde
+    socket.on('send-message', async ({ visitorId, content }) => {
+        try {
+            if (!content || content.trim() === '' || !visitorId) {
+                return console.log('Geçersiz mesaj veya ziyaretçi kimliği.');
+            }
+
+            console.log(`Sunucuya mesaj geldi: (İçerik: "${content}", Gönderen: ${socket.id})`); // Sunucuya mesaj geldi logu
+
+            try {
+                const visitor = await Visitor.findById(visitorId);
+                if (!visitor) {
+                    return console.log('Ziyaretçi bulunamadı:', visitorId);
+                }
+
+                const message = new Message({
+                    visitorId: visitor._id,
+                    username: visitor.username,
+                    profilePhoto: visitor.profilePhoto,
+                    content: content
+                });
+
+                await message.save();
+
+                console.log('Mesaj veritabanına kaydedildi ve tüm istemcilere gönderiliyor.'); // Mesaj yayınlanıyor logu
+                io.emit('new-message', message);
+            } catch (error) {
+                console.error('Mesaj kaydedilirken veya yayınlanırken hata:', error);
+            }
+            socket.emit('chat-error', 'Mesaj gönderilirken bir sunucu hatası oluştu.');
+        } catch (error) {
+            console.error('Mesaj kaydedilirken veya yayınlanırken hata:', error);
+        }
     });
 });
 

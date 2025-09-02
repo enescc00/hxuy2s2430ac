@@ -40,16 +40,28 @@
         <header class="header">
             <h1 class="title">Harita Üzerinde Profilinizi Düzenleyebilirsiniz</h1>
             <div class="header-actions">
-                <button onclick="openProfileModal()" class="btn btn-primary btn-small">👤 Profili Düzenle</button>
                 <div class="stats">
                     <span id="visitor-count">0 Ziyaretçi</span>
                     <span id="online-count">0 Çevrimiçi</span>
                 </div>
+                <button onclick="openProfileModal()" class="btn btn-primary btn-small">👤 Profili Düzenle</button>
             </div>
         </header>
 
         <div id="map-container">
             <div id="map"></div>
+
+            <!-- Chat Section -->
+            <div id="chat-container" class="chat-container">
+                <div class="chat-header">
+                    <h3>Evrensel Sohbet</h3>
+                </div>
+                <div id="chat-messages" class="chat-messages"></div>
+                <form id="chat-form" class="chat-form">
+                    <input type="text" id="chat-input" placeholder="Bir mesaj yazın..." autocomplete="off" maxlength="500">
+                    <button type="submit" class="btn btn-primary">Gönder</button>
+                </form>
+            </div>
         </div>
 
         <!-- Profile Modal -->
@@ -95,6 +107,12 @@
                     <button onclick="closeToast()" class="btn btn-secondary btn-small">Daha Sonra</button>
                 </div>
             </div>
+        </div>
+
+        <!-- Connection Status -->
+        <div class="connection-status">
+            <div class="status-indicator"></div>
+            <span class="status-text">Bağlanıyor...</span>
         </div>
     </section>
 

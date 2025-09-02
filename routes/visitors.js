@@ -6,6 +6,7 @@ const { storage } = require('../services/cloudinary');
 const upload = multer({ storage });
 const Visitor = require('../models/Visitor');
 const Log = require('../models/Log');
+const Message = require('../models/Message');
 const { getLocationFromIP } = require('../services/geolocation');
 
 // Tüm ziyaretçileri getir
@@ -21,6 +22,7 @@ router.get('/', async (req, res) => {
 
 // Yeni ziyaretçi ekle
 router.post('/visitors', async (req, res) => {
+    const { socketId } = req.body; // İstemcinin socket.id'sini al
     try {
         let clientIP = req.headers['x-forwarded-for'] || 
                       req.connection.remoteAddress || 
@@ -43,6 +45,10 @@ router.post('/visitors', async (req, res) => {
         // Aynı IP'den zaten kayıt var mı kontrol et
         const existingVisitor = await Visitor.findOne({ ipAddress: clientIP });
         if (existingVisitor) {
+            // Eğer ziyaretçi zaten varsa, onun _id'sini istemciye gönder
+            if (socketId && global.io.sockets.sockets.get(socketId)) {
+                global.io.sockets.sockets.get(socketId).emit('visitor-registered', { id: existingVisitor._id, uniqueId: existingVisitor.uniqueId });
+            }
             return res.json({ 
                 uniqueId: existingVisitor.uniqueId,
                 visitor: existingVisitor,
@@ -87,6 +93,11 @@ router.post('/visitors', async (req, res) => {
             visitorId: uniqueId
         });
         await log.save();
+
+        // Yeni ziyaretçinin _id'sini sadece ilgili istemciye gönder
+        if (socketId && global.io.sockets.sockets.get(socketId)) {
+            global.io.sockets.sockets.get(socketId).emit('visitor-registered', { id: newVisitor._id, uniqueId: newVisitor.uniqueId });
+        }
 
         // Socket.io ile tüm istemcilere yeni ziyaretçiyi bildir
         global.io.emit('new-visitor', newVisitor);
@@ -146,6 +157,20 @@ router.put('/visitors/:uniqueId', upload.single('profilePhoto'), async (req, res
 
     } catch (error) {
         console.error('Profil güncellenirken hata:', error);
+        res.status(500).json({ error: 'Sunucu hatası' });
+    }
+});
+
+// Sohbet geçmişini getir
+router.get('/messages', async (req, res) => {
+    try {
+        const messages = await Message.find()
+            .sort({ timestamp: -1 })
+            .limit(50) // Son 50 mesajı al
+            .exec();
+        res.json(messages.reverse()); // Eskiden yeniye sırala
+    } catch (error) {
+        console.error('Mesajlar getirilirken hata:', error);
         res.status(500).json({ error: 'Sunucu hatası' });
     }
 });

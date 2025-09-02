@@ -8,6 +8,10 @@ class VisitorMap {
         this.visitors = new Map();
         this.onlineCount = 0;
         
+        this.chatMessagesElement = document.getElementById('chat-messages');
+        this.chatFormElement = document.getElementById('chat-form');
+        this.chatInputElement = document.getElementById('chat-input');
+        
         this.init();
     }
 
@@ -23,6 +27,7 @@ class VisitorMap {
         
         // Event listener'ları ekle
         this.setupEventListeners();
+        this.initChat();
         
         // Loading screen'i gizle
         setTimeout(() => {
@@ -58,6 +63,13 @@ class VisitorMap {
         
         // Bağlantı durumu
         this.socket.on('connect', () => {
+            this.socket.on('visitor-registered', (data) => {
+                console.log('Ziyaretçi kimliği sunucudan alındı:', data.id);
+                this.visitorId = data.id; // Sunucudan gelen veritabanı _id'sini sakla
+                this.userUniqueId = data.uniqueId;
+                localStorage.setItem('visitorId', this.visitorId);
+                localStorage.setItem('userUniqueId', this.userUniqueId);
+            });
             console.log('Socket.io bağlantısı kuruldu');
             this.updateConnectionStatus('connected');
             this.onlineCount++;
@@ -91,6 +103,12 @@ class VisitorMap {
         this.socket.on('visitor-deleted', (uniqueId) => {
             this.removeVisitorMarker(uniqueId);
             this.updateStats();
+        });
+
+        // Yeni sohbet mesajı geldi
+        this.socket.on('new-message', (message) => {
+            console.log('Sunucudan yeni mesaj alındı:', message);
+            this.displayMessage(message);
         });
     }
 
@@ -163,7 +181,8 @@ class VisitorMap {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
-                }
+                },
+                body: JSON.stringify({ socketId: this.socket.id }) // socket.id'yi sunucuya gönder
             });
 
             const data = await response.json();
@@ -388,6 +407,82 @@ class VisitorMap {
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    // --- Sohbet Fonksiyonları ---
+
+    initChat() {
+        this.chatFormElement.addEventListener('submit', (e) => this.sendMessage(e));
+        this.loadChatHistory();
+    }
+
+    async loadChatHistory() {
+        try {
+            const response = await fetch('/api/messages');
+            if (!response.ok) {
+                throw new Error('Sohbet geçmişi yüklenemedi.');
+            }
+            const messages = await response.json();
+            this.chatMessagesElement.innerHTML = ''; // Mevcut mesajları temizle
+            messages.forEach(message => this.displayMessage(message, false));
+            
+            // Mesajları en alta kaydır
+            this.chatMessagesElement.scrollTop = this.chatMessagesElement.scrollHeight;
+
+        } catch (error) {
+            console.error('Sohbet geçmişi yüklenirken hata:', error);
+            this.chatMessagesElement.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Sohbet yüklenemedi.</p>';
+        }
+    }
+
+    sendMessage(event) {
+        event.preventDefault();
+        const content = this.chatInputElement.value.trim();
+
+        if (content && this.visitorId) { // Check for this.visitorId (from server) instead of this.userUniqueId
+            console.log(`İstemciden mesaj gönderiliyor:`, { visitorId: this.visitorId, content });
+            this.socket.emit('send-message', {
+                visitorId: this.visitorId, // Send the confirmed visitorId
+                content: content
+            });
+            this.chatInputElement.value = '';
+        } else {
+            console.warn('Mesaj gönderilemedi: Ziyaretçi kimliği henüz sunucudan alınmadı.');
+            // Optionally, show an error to the user
+        }
+    }
+
+    displayMessage(message, scroll = true) {
+        const { username, profilePhoto, content, timestamp } = message;
+        
+        const messageElement = document.createElement('div');
+        messageElement.className = 'chat-message';
+
+        const avatar = profilePhoto || 'https://i.imgur.com/sC22T4J.png'; // Varsayılan avatar
+        const displayUsername = username ? this.escapeHtml(username) : 'Anonim';
+        const displayTime = new Date(timestamp).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+
+        messageElement.innerHTML = `
+            <div class="message-avatar">
+                <img src="${avatar}" alt="${displayUsername}" onerror="this.src='https://i.imgur.com/sC22T4J.png';">
+            </div>
+            <div class="message-content">
+                <div class="message-header">
+                    <span class="message-username">${displayUsername}</span>
+                    <span class="message-timestamp">${displayTime}</span>
+                </div>
+                <div class="message-text">
+                    ${this.escapeHtml(content)}
+                </div>
+            </div>
+        `;
+
+        this.chatMessagesElement.appendChild(messageElement);
+
+        // Yeni mesaj geldiğinde en alta kaydır
+        if (scroll) {
+            this.chatMessagesElement.scrollTop = this.chatMessagesElement.scrollHeight;
+        }
     }
 }
 
